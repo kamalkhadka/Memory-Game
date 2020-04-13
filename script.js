@@ -50,6 +50,7 @@ function createDivsForColors(colorArray) {
     newDiv.classList.add(color);
 
     // call a function handleCardClick when a div is clicked on
+    localStorage.setItem("clickCount", 0);
     newDiv.addEventListener("click", handleCardClick);
 
     // append the div to the element with an id of game
@@ -60,8 +61,52 @@ function createDivsForColors(colorArray) {
 // TODO: Implement this function!
 function handleCardClick(event) {
   // you can use event.target to see which element was clicked
-  console.log("you just clicked", event.target);
+  // console.log("you just clicked", event.target);
+  let target = event.target;
+  changeBackgroundColor(target);
+
 }
 
 // when the DOM loads
 createDivsForColors(shuffledColors);
+
+function changeBackgroundColor(target) {
+  if (!target.getAttribute('style')) {
+    let clickCount = parseInt(localStorage.clickCount);
+    clickCount++;
+    if (clickCount <= 2) {
+      target.style.backgroundColor = target.getAttribute('class');
+      target.setAttribute('data-faceup', true);
+      localStorage.setItem("clickCount", clickCount);
+    }
+
+    if (clickCount == 2) {
+      let match = checkCardMatch();
+    }
+
+  }
+
+}
+
+function checkCardMatch() {
+  let cardsFaceUp = document.querySelectorAll('div[data-faceup]');
+  let card1 = cardsFaceUp[0];
+  let card2 = cardsFaceUp[1];
+
+  if (card1.getAttribute('class') === card2.getAttribute('class')) {
+    card1.removeAttribute('data-faceup');
+    card2.removeAttribute('data-faceup');
+    localStorage.setItem("clickCount", 0);
+  } else {
+    setTimeout(foldCard, 1000);
+  }
+}
+
+function foldCard() {
+  let cards = document.querySelectorAll('div[data-faceup]');
+  for (let card of cards) {
+    card.removeAttribute('style');
+    card.removeAttribute('data-faceup');
+  }
+  localStorage.setItem("clickCount", 0);
+}
